@@ -10,6 +10,9 @@ int main()
 		0xA9, 0x42,
 		0xA2, 0x05,
 		0x8D, 0x34, 0x12,
+		0x8E, 0x78, 0x56,
+		0xAE, 0x34, 0x12,
+		0xAD, 0x78, 0x56,
 		0x00
 	});
 	
@@ -24,9 +27,9 @@ int main()
 
 	cpu.run();
 
-	uint8_t result = ram.read(0x1234);
 	std::cout << "A = " << cpu.registers.A << ", X = " << cpu.registers.X << std::endl;
-	std::cout << "RAM[0x1234] = " << (int)result << std::endl;
+	std::cout << "RAM[0x1234] = " << (int)ram.read(0x1234) << std::endl;
+	std::cout << "RAM[0x5678] = " << (int)ram.read(0x5678) << std::endl;
 
 	return 0;
 }

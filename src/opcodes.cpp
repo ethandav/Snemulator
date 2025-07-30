@@ -25,4 +25,22 @@ void register_opcodes(CPU& cpu)
 			uint32_t address = absolute(cpu);
 			cpu.memory->write(address, cpu.registers.A & 0xFF);
 		};
+
+	cpu.opcodeTable[0x8E] = [](CPU& cpu)
+		{
+			uint32_t address = absolute(cpu);
+			cpu.memory->write(address, cpu.registers.X & 0xFF);
+		};
+
+	cpu.opcodeTable[0xAE] = [](CPU& cpu)
+		{
+			uint32_t address = absolute(cpu);
+			cpu.registers.X = cpu.memory->read(address);
+		};
+
+	cpu.opcodeTable[0xAD] = [](CPU& cpu)
+		{
+			uint32_t address = absolute(cpu);
+			cpu.registers.A = cpu.memory->read(address);
+		};
 }
