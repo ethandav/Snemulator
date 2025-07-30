@@ -1,5 +1,7 @@
 #include "opcodes.h"
 #include "cpu.h"
+#include "AddressingModes.h"
+#include <iostream>
 
 void register_opcodes(CPU& cpu)
 {
@@ -16,5 +18,11 @@ void register_opcodes(CPU& cpu)
 	cpu.opcodeTable[0x00] = [](CPU& cpu)
 		{
 			cpu.running = false;
+		};
+
+	cpu.opcodeTable[0x8D] = [](CPU& cpu)
+		{
+			uint32_t address = absolute(cpu);
+			cpu.memory->write(address, cpu.registers.A & 0xFF);
 		};
 }
