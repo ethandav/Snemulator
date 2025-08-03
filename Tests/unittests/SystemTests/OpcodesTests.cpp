@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "gtest/gtest.h"
 #include "src/cpu.h"
 #include "src/memory.h"
 
@@ -31,11 +32,46 @@ protected:
 
 TEST_F(CPUOpcodeTest, LDA_Immediate_LoadsCorrectValue)
 {
-
     LoadProgram({
         0xA9, 0x42,
         0x00
     });
+
+    cpu.run();
+
+    EXPECT_EQ(cpu.registers.A, 0x42);
+}
+
+TEST_F(CPUOpcodeTest, LDA_Absolute_LoadsCorrectValue)
+{
+    LoadProgram({
+        0xAD, 0x42,
+        0x00
+        });
+
+    cpu.run();
+
+    EXPECT_EQ(cpu.registers.A, 0x42);
+}
+
+TEST_F(CPUOpcodeTest, LDA_Indexed_X_LoadsCorrectValue)
+{
+    LoadProgram({
+        0xBD, 0x42,
+        0x00
+        });
+
+    cpu.run();
+
+    EXPECT_EQ(cpu.registers.A, 0x42);
+}
+
+TEST_F(CPUOpcodeTest, LDX_Indexed_Y_LoadsCorrectValue)
+{
+    LoadProgram({
+        0xBD, 0x42,
+        0x00
+        });
 
     cpu.run();
 
