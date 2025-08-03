@@ -29,9 +29,10 @@ private:
 class RAM : public MemoryHandler
 {
 public:
-	RAM(size_t size) : data(size, 0x00) {};
+	RAM() {};
 	uint8_t read(uint32_t address) override;
 	void write(uint32_t address, uint8_t value) override;
+	void load(size_t size);
 private:
 	std::vector<uint8_t> data;
 };
@@ -39,10 +40,11 @@ private:
 class ROM : public MemoryHandler
 {
 public:
-	ROM(const std::vector<uint8_t>& input) : data(input) {};
+	ROM() {};
 	uint8_t read(uint32_t address) override;
 	void write(uint32_t address, uint8_t value) override {}
 	size_t size() const { return data.size(); }
+	void load(const std::vector<uint8_t> input);
 private:
 	std::vector<uint8_t> data;
 };
