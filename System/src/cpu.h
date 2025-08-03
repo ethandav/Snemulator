@@ -16,12 +16,26 @@ struct Registers
 	uint16_t	D	= 0;	//Direct page register, used for direct page addressing modes
 };
 
+enum PFlags
+{
+	C = 0x01,  // Carry
+	Z = 0x02,  // Zero
+	I = 0x04,  // IRQ Disable
+	D = 0x08,  // Decimal Mode
+	X = 0x10,  // Index Register size (1 = 8-bit)
+	M = 0x20,  // Accumulator size (1 = 8-bit)
+	V = 0x40,  // Overflow
+	N = 0x80   // Negative
+};
+
 class CPU
 {
 public:
 	CPU();
 	void run();
 	void step();
+	void setFlag(PFlags flag, bool enabled);
+	bool isIn8BitMode();
 
 	Registers registers = {};
 	MemoryMap* memory;
@@ -29,5 +43,8 @@ public:
 private:
 	using OpcodeHandler = void(*)(CPU&);
 	std::array<OpcodeHandler, 256> opcodeTable;
+
+	void setDefaultFlags();
+
 	friend void register_opcodes(CPU&);
 };
