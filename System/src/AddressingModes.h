@@ -24,7 +24,7 @@ inline uint32_t absolute(CPU& cpu, uint16_t index = 0x00)
 
 inline uint32_t directPage(CPU& cpu, uint16_t index = 0x00) {
     uint8_t offset = cpu.memory->read(cpu.registers.PC++);
-    return (cpu.registers.DBR << 16) | ((cpu.registers.D + offset + index) & 0xFFFF);
+    return (0x00 << 16) | ((cpu.registers.D + offset + index) & 0xFFFF);
 }
 
 inline uint32_t indirect(CPU& cpu, uint16_t index = 0x00)

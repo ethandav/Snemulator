@@ -68,6 +68,7 @@ void Memory::loadProgram(const std::vector<uint8_t>& program)
 {
 	rom.load(program);
 	map.map(0x008000, 0x008000 + rom.size() - 1, &rom);
+	mirrorWRam();
 }
 
 void Memory::mirrorWRam()
