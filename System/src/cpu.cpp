@@ -13,8 +13,6 @@ CPU::CPU()
 void CPU::run()
 {
 	setDefaultFlags();
-	std::cout << "P: " << (int)registers.P << "\n";
-	std::cout << "Check M: " << ((registers.P & PFlags::M) != 0) << "\n";
 	while (running)
 	{
 		step();

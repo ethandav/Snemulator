@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <vector>
+#include <memory>
 
 struct MemoryHandler
 {
@@ -49,4 +50,18 @@ public:
 	void load(const std::vector<uint8_t> input);
 private:
 	std::vector<uint8_t> data;
+};
+
+class Memory
+{
+public:
+	Memory() {};
+	void init();
+	void loadProgram(const std::vector<uint8_t>& program);
+
+	MemoryMap map = {};
+	RAM wram = {};
+	ROM rom = {};
+private:
+	void mirrorWRam();
 };

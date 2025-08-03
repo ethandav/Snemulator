@@ -55,5 +55,25 @@ uint8_t ROM::read(uint32_t address)
 
 void ROM::load(const std::vector<uint8_t> input)
 {
-	data = std::vector<uint8_t>(input);
+	data = input;
+}
+
+void Memory::init()
+{
+	wram.load(0x20000);
+	map.map(0x7E0000, 0x7FFFFF, &wram);
+}
+
+void Memory::loadProgram(const std::vector<uint8_t>& program)
+{
+	rom.load(program);
+	map.map(0x008000, 0x008000 + rom.size() - 1, &rom);
+}
+
+void Memory::mirrorWRam()
+{
+	for (uint8_t bank = 0x00; bank <= 0x3F; ++bank)
+		map.map((bank << 16), (bank << 16) + 0x1FFF, &wram);
+	for (uint8_t bank = 0x80; bank <= 0xBF; ++bank)
+		map.map((bank << 16), (bank << 16) + 0x1FFF, &wram);
 }
