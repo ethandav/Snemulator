@@ -35,7 +35,8 @@ public:
 	void run();
 	void step();
 	void setFlag(PFlags flag, bool enabled);
-	bool isIn8BitMode();
+	bool isAccumulator8Bit();
+	bool isIndex8Bit();
 
 	Registers registers = {};
 	MemoryMap* memory;
@@ -45,6 +46,9 @@ private:
 	std::array<OpcodeHandler, 256> opcodeTable;
 
 	void setDefaultFlags();
+	void setA(uint16_t value);
+	void setIndex(uint16_t& index, uint16_t value);
+	void updateRegisterSizes();
 
 	friend void register_opcodes(CPU&);
 };

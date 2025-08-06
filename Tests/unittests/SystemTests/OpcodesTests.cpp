@@ -254,7 +254,6 @@ namespace OpCode_Tests
             EXPECT_EQ(cpu.registers.A, 0x9B);
         }
     }
-
     namespace LDX_Tests
     {
         TEST_F(CPUOpcodeTest, LDX_Immediate_LoadsCorrectValue)
@@ -333,7 +332,6 @@ namespace OpCode_Tests
             EXPECT_EQ(cpu.registers.X, 0x25);
         }
     }
-
     namespace LDY_Tests
     {
         TEST_F(CPUOpcodeTest, LDY_Immediate_LoadsCorrectValue)
@@ -412,7 +410,6 @@ namespace OpCode_Tests
             EXPECT_EQ(cpu.registers.Y, 0xC3);
         }
     }
-
     namespace STA_Tests
     {
         TEST_F(CPUOpcodeTest, STA_DP_Indexed_Indirect_X_LoadsCorrectValue)
@@ -627,6 +624,275 @@ namespace OpCode_Tests
             uint16_t result = memory->wram.read(0x4E1E);
 
             EXPECT_EQ(result, 0x9D);
+        }
+    }
+    namespace STX_Tests
+    {
+        TEST_F(CPUOpcodeTest, STX_DirectPage_LoadsCorrectValue)
+        {
+            cpu.registers.X = 0xCD;
+            cpu.registers.D = 0x10;
+            LoadProgram({
+                0x86, 0x10,
+                0x00
+                });
+
+            cpu.run();
+            uint16_t result = memory->wram.read(0x0020);
+
+            EXPECT_EQ(result, 0xCD);
+        }
+        TEST_F(CPUOpcodeTest, STX_Absolute_LoadsCorrectValue)
+        {
+            cpu.registers.X = 0xDC;
+            LoadProgram({
+                0x8E, 0x10, 0x21,
+                0x00
+                });
+
+            cpu.run();
+            uint16_t result = memory->wram.read(0x2110);
+
+            EXPECT_EQ(result, 0xDC);
+        }
+        TEST_F(CPUOpcodeTest, STX_DirectPage_Indexed_Y_LoadsCorrectValue)
+        {
+            cpu.registers.X = 0xCD;
+            cpu.registers.D = 0xEE;
+            cpu.registers.Y = 0xA4;
+            LoadProgram({
+                0x96, 0x4A,
+                0x00
+                });
+
+            cpu.run();
+            uint16_t result = memory->wram.read(0x01DC);
+
+            EXPECT_EQ(result, 0xCD);
+        }
+    }
+    namespace STY_Tests
+    {
+        TEST_F(CPUOpcodeTest, STY_DirectPage_LoadsCorrectValue)
+        {
+            cpu.registers.Y = 0x2B;
+            cpu.registers.D = 0x5D;
+            LoadProgram({
+                0x84, 0x02,
+                0x00
+                });
+
+            cpu.run();
+            uint16_t result = memory->wram.read(0x005F);
+
+            EXPECT_EQ(result, 0x2B);
+        }
+        TEST_F(CPUOpcodeTest, STY_Absolute_LoadsCorrectValue)
+        {
+            cpu.registers.Y = 0xBA;
+            LoadProgram({
+                0x8C, 0x1C, 0x4F,
+                0x00
+                });
+
+            cpu.run();
+            uint16_t result = memory->wram.read(0x4F1C);
+
+            EXPECT_EQ(result, 0xBA);
+        }
+        TEST_F(CPUOpcodeTest, STY_DirectPage_Indexed_X_LoadsCorrectValue)
+        {
+            cpu.registers.Y = 0x1F;
+            cpu.registers.D = 0x2C;
+            cpu.registers.X = 0x0A;
+            LoadProgram({
+                0x94, 0x11,
+                0x00
+                });
+
+            cpu.run();
+            uint16_t result = memory->wram.read(0x0047);
+
+            EXPECT_EQ(result, 0x1F);
+        }
+    }
+    namespace REP_SEP_Tests
+    {
+        TEST_F(CPUOpcodeTest, REP_SetAccumulator_16BitMode_SetsCorrectPFlags)
+        {
+            cpu.setFlag(M, true);
+            cpu.setFlag(X, true);
+            LoadProgram({
+                0xC2, 0x20,
+                0x00
+                });
+            cpu.run();
+
+            EXPECT_TRUE(cpu.isAccumulator8Bit() == false);
+        }
+        TEST_F(CPUOpcodeTest, REP_SetIndex_16BitMode_SetsCorrectPFlags)
+        {
+            cpu.setFlag(M, true);
+            cpu.setFlag(X, true);
+            LoadProgram({
+                0xC2, 0x10,
+                0x00
+                });
+            cpu.run();
+
+            EXPECT_TRUE(cpu.isIndex8Bit() == false);
+        }
+        TEST_F(CPUOpcodeTest, REP_SetAccumulatorAndIndex_16BitMode_SetsCorrectPFlags)
+        {
+            cpu.setFlag(M, true);
+            cpu.setFlag(X, true);
+            LoadProgram({
+                0xC2, 0x30,
+                0x00
+                });
+            cpu.run();
+
+            EXPECT_TRUE(cpu.isAccumulator8Bit() == false);
+            EXPECT_TRUE(cpu.isIndex8Bit() == false);
+        }
+        TEST_F(CPUOpcodeTest, SEP_SetAccumulator_8BitMode_SetsCorrectPFlags)
+        {
+            cpu.setFlag(M, false);
+            cpu.setFlag(X, false);
+            LoadProgram({
+                0xE2, 0x20,
+                0x00
+                });
+            cpu.run();
+
+            EXPECT_TRUE(cpu.isAccumulator8Bit() == true);
+        }
+        TEST_F(CPUOpcodeTest, SEP_SetIndex_8BitMode_SetsCorrectPFlags)
+        {
+            cpu.setFlag(M, false);
+            cpu.setFlag(X, false);
+            LoadProgram({
+                0xE2, 0x10,
+                0x00
+                });
+            cpu.run();
+
+            EXPECT_TRUE(cpu.isIndex8Bit() == true);
+        }
+        TEST_F(CPUOpcodeTest, SEP_SetAccumulatorIndex_8BitMode_SetsCorrectPFlags)
+        {
+            cpu.setFlag(M, false);
+            cpu.setFlag(X, false);
+            LoadProgram({
+                0xE2, 0x30,
+                0x00
+                });
+            cpu.run();
+
+            EXPECT_TRUE(cpu.isAccumulator8Bit() == true);
+            EXPECT_TRUE(cpu.isIndex8Bit() == true);
+        }
+        TEST_F(CPUOpcodeTest, REP_Set16BitMode_SetsCorrectPFlags)
+        {
+            LoadProgram({
+                0xE2, 0x30,
+                0xC2, 0x10,
+                0xC2, 0x20,
+                0xE2, 0x10
+                });
+            cpu.run();
+
+            EXPECT_TRUE(cpu.isAccumulator8Bit() == false);
+            EXPECT_TRUE(cpu.isIndex8Bit() == true);
+        }
+    }
+    namespace TestProgram
+    {
+        TEST_F(CPUOpcodeTest, OpCodeProgramTest_LoadsCorrectValues)
+        {
+            memory->wram.write(0x0042, 0x54 & 0xFF);
+            memory->wram.write(0x0043, 0x76 & 0xFF);
+            cpu.registers.D = 0x00;
+
+            LoadProgram({
+                // Setup: preload memory at $1234 and $0042 via STA immediate
+                0xA9, 0x42,             // LDA #$42
+                0x8D, 0x34, 0x12,       // STA $1234 (absolute)
+
+                0xA2, 0x05,             // LDX #$05
+                0x8E, 0x78, 0x56,       // STX $5678 (absolute)
+
+                0xA0, 0x99,             // LDY #$99
+                0x8C, 0x10, 0x10,       // STY $1010 (absolute)
+
+                // Direct page: write $21 to DP location $10, then read it
+                0xA9, 0x21,             // LDA #$21
+                0x85, 0x10,             // STA $10 (direct page)
+                0xA9, 0x00,             // LDA #$00 (clear A)
+                0xA5, 0x10,             // LDA $10
+                0x8D, 0xB1, 0x2C,       // STA $2CB1 for test assert
+
+                // Direct page, X
+                0xA9, 0x55,             // LDA #$55
+                0x95, 0x11,             // STA $11,X   (X = 5, writes to $16)
+                0xA9, 0x00,             // LDA #$00
+                0xB5, 0x11,             // LDA $11,X   (loads from $16)
+                0x8D, 0x43, 0xDC,       // STA $DC43 for test assert
+
+                // Absolute, X
+                0xA9, 0x66,             // LDA #$66
+                0x9D, 0x00, 0x20,       // STA $2000,X ($2005)
+                0xA9, 0x00,             // LDA #$00
+                0xBD, 0x00, 0x20,       // LDA $2000,X ($2005)
+                0x8D, 0x7A, 0x12,       // STA $127A for test assert
+
+                // Absolute, Y
+                0xA9, 0x77,             // LDA #$77
+                0x99, 0x00, 0x30,       // STA $3000,Y ($3099)
+                0xA9, 0x00,             // LDA #$00
+                0xB9, 0x00, 0x30,       // LDA $3000,Y
+                0x8D, 0x7B, 0xB2,       // STA $B27B for test assert
+
+                // Absolute long
+                0xA9, 0x88,             // LDA #$88
+                0x8F, 0x00, 0x40, 0x7E, // STA $7E4000
+                0xA9, 0x00,             // LDA #$00
+                0xAF, 0x00, 0x40, 0x7E, // LDA $7E4000
+                0x8D, 0x41, 0x44,       // STA $4441 for test assert
+
+                // Direct page indexed indirect, Y
+                0xA9, 0xDE,             // LDA #$DE
+                0x85, 0x20,             // STA $20
+                0xA9, 0x40,             // LDA #$40
+                0x85, 0x21,             // STA $21
+
+                0xA9, 0x99,             // LDA #$99
+                0x91, 0x20,             // STA ($20),Y
+
+                0xA9, 0x00,             // LDA #$00
+                0xB1, 0x20,             // LDA ($20),Y
+                0x8D, 0xAA, 0xEE,       // STA $EEAA for test assert
+
+                0x00                    // BRK
+                });
+
+            cpu.run();
+
+            EXPECT_EQ(memory->wram.read(0x1234), 0x42); // STA $1234
+            EXPECT_EQ(memory->wram.read(0x5678), 0x05); // STX $5678
+            EXPECT_EQ(memory->wram.read(0x1010), 0x99); // STY $1010
+            EXPECT_EQ(memory->wram.read(0x0010), 0x21); // STA $10 (Direct Page)
+            EXPECT_EQ(memory->wram.read(0x2CB1), 0x21); // LDA $10 — expect value in A to now be 0x21
+            EXPECT_EQ(memory->wram.read(0x0016), 0x55); // STA $11,X -> $11 + 5 = $16
+            EXPECT_EQ(memory->wram.read(0xDC43), 0x55); // LDA $11,X -> $16 again
+            EXPECT_EQ(memory->wram.read(0x2005), 0x66); // STA $2000,X -> $2005
+            EXPECT_EQ(memory->wram.read(0x127A), 0x66); // LDA $2000,X -> expect 0x66 back
+            EXPECT_EQ(memory->wram.read(0x3099), 0x77); // STA $3000,Y -> $3099
+            EXPECT_EQ(memory->wram.read(0xB27B), 0x77); // LDA $3000,Y -> expect 0x77
+            EXPECT_EQ(memory->wram.read(0x4000), 0x88); // STA $7E4000 (absolute long)
+            EXPECT_EQ(memory->wram.read(0x4441), 0x88); // LDA $7E4000
+            EXPECT_EQ(memory->wram.read(0x4177), 0x99); // STA ($20),Y — ($20) = $40DE, Y = 0x99 -> $4177
+            EXPECT_EQ(memory->wram.read(0xEEAA), 0x99); // LDA ($20),Y — expect A = 0x99
         }
     }
 }

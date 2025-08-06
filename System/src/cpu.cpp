@@ -33,6 +33,7 @@ void CPU::step()
 void CPU::setDefaultFlags()
 {
 	setFlag(M, true);
+	setFlag(X, true);
 }
 
 void CPU::setFlag(PFlags flag, bool enabled)
@@ -41,10 +42,33 @@ void CPU::setFlag(PFlags flag, bool enabled)
 	else registers.P &= ~flag;
 }
 
-bool CPU::isIn8BitMode()
+bool CPU::isAccumulator8Bit()
 {
-	if ((registers.P & M) != 0)
-		return true;
-	else
-		return false;
+	return registers.P & 0x20;
+}
+
+bool CPU::isIndex8Bit()
+{
+	return registers.P & 0x10;
+}
+
+void CPU::setA(uint16_t value)
+{
+	registers.A = isAccumulator8Bit() ? value & 0x00FF : value;
+}
+
+void CPU::setIndex(uint16_t& index, uint16_t value)
+{
+	index = isIndex8Bit() ? value & 0x00FF : value;
+}
+
+void CPU::updateRegisterSizes()
+{
+	if (isAccumulator8Bit())
+		registers.A &= 0x00FF;
+
+	if (isIndex8Bit()) {
+		registers.X &= 0x00FF;
+		registers.Y &= 0x00FF;
+	}
 }

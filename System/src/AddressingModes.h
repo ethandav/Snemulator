@@ -2,10 +2,10 @@
 #include "cpu.h"
 #include <cstdint>
 
-inline uint16_t immediate(CPU& cpu)
+inline uint16_t immediate(CPU& cpu, bool in8BitMode)
 {
-    if (cpu.isIn8BitMode())
-        return cpu.memory->read(cpu.registers.PC++);
+    if (in8BitMode)
+        return cpu.memory->read(cpu.registers.PC++) & 0xFF;
     else
     {
         uint32_t lo = cpu.memory->read(cpu.registers.PC++);
