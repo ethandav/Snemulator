@@ -30,7 +30,7 @@ public:
 private:
 	std::vector<MemoryMapEntry> regions = {};
 	static constexpr size_t BANK_COUNT = 256;
-	std::array<std::vector<MemoryMapEntry>, BANK_COUNT> bankLUT = {};
+	std::array<std::unique_ptr<std::vector<MemoryMapEntry>>, BANK_COUNT> bankLUT;
 	uint8_t lastReadData = 0x00;
 };
 
