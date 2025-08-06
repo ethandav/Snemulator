@@ -2,24 +2,42 @@
 
 void MemoryMap::map(uint32_t start, uint32_t end, MemoryHandler* handler)
 {
+	MemoryMapEntry entry = { start, end, handler, start };
+	regions.push_back(entry);
+
 	uint8_t startBank = start >> 16;
 	uint8_t endBank = end >> 16;
 
 	for (uint8_t bank = startBank; bank <= endBank; ++bank)
-	{
-		bankLUT[bank].push_back({ start, end, handler, start });
-	}
+		bankLUT[bank].push_back(entry);
+
+	if (regions.size() > 8)
+		useLUT = true;
 }
 
 uint8_t MemoryMap::read(uint32_t address)
 {
-	uint8_t bank = address >> 16;
-	for (auto& entry : bankLUT[bank])
+	if (useLUT)
 	{
-		if (address >= entry.start && address <= entry.end)
+		uint8_t bank = address >> 16;
+		for (auto& entry : bankLUT[bank])
 		{
-			lastReadData = entry.handler->read(address - entry.base);
-			return lastReadData;
+			if (address >= entry.start && address <= entry.end)
+			{
+				lastReadData = entry.handler->read(address - entry.base);
+				return lastReadData;
+			}
+		}
+	}
+	else
+	{
+		for (auto& entry : regions)
+		{
+			if (address >= entry.start && address <= entry.end)
+			{
+				lastReadData = entry.handler->read(address - entry.base);
+				return lastReadData;
+			}
 		}
 	}
 	return lastReadData;
@@ -27,13 +45,27 @@ uint8_t MemoryMap::read(uint32_t address)
 
 void MemoryMap::write(uint32_t address, uint8_t value)
 {
-	uint8_t bank = address >> 16;
-	for (auto& entry : bankLUT[bank])
+	if (useLUT)
 	{
-		if (address >= entry.start && address <= entry.end)
+		uint8_t bank = address >> 16;
+		for (auto& entry : bankLUT[bank])
 		{
-			entry.handler->write(address - entry.base, value);
-			return;
+			if (address >= entry.start && address <= entry.end)
+			{
+				entry.handler->write(address - entry.base, value);
+				return;
+			}
+		}
+	}
+	else
+	{
+		for (auto& entry : regions)
+		{
+			if (address >= entry.start && address <= entry.end)
+			{
+				entry.handler->write(address - entry.base, value);
+				return;
+			}
 		}
 	}
 }

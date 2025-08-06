@@ -25,7 +25,10 @@ public:
 	void map(uint32_t start, uint32_t end, MemoryHandler* handler);
 	uint8_t read(uint32_t address);
 	void write(uint32_t address, uint8_t value);
+
+	bool useLUT = false;
 private:
+	std::vector<MemoryMapEntry> regions = {};
 	static constexpr size_t BANK_COUNT = 256;
 	std::array<std::vector<MemoryMapEntry>, BANK_COUNT> bankLUT = {};
 	uint8_t lastReadData = 0x00;
@@ -69,4 +72,3 @@ public:
 private:
 	void mirrorWRam();
 };
-
