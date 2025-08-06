@@ -41,9 +41,9 @@ inline uint32_t dpIndirectX(CPU& cpu)
 inline uint32_t dpIndirectY(CPU& cpu)
 {
     uint8_t operand = cpu.memory->read(cpu.registers.PC++);
-    uint16_t base = (cpu.registers.D + operand) & 0xFFFF;
-    uint8_t lo = cpu.memory->read(0x000000 | (base & 0xFF));
-    uint8_t hi = cpu.memory->read(0x000000 | ((base + 1) & 0xFF));
+    uint16_t address = (cpu.registers.D + operand) & 0xFFFF;
+    uint8_t lo = cpu.memory->read(address);
+    uint8_t hi = cpu.memory->read((address + 1) & 0xFF);
     uint16_t pointer = (hi << 8) | lo;
     return (cpu.registers.DBR << 16) | ((pointer + cpu.registers.Y) & 0xFFFF);
 }
@@ -51,9 +51,9 @@ inline uint32_t dpIndirectY(CPU& cpu)
 inline uint32_t dpIndirect(CPU& cpu)
 {
     uint8_t operand = cpu.memory->read(cpu.registers.PC++);
-    uint16_t base = (cpu.registers.D + operand) & 0xFFFF;
-    uint8_t lo = cpu.memory->read(0x000000 | (base & 0xFF));
-    uint8_t hi = cpu.memory->read(0x000000 | ((base + 1) & 0xFF));
+    uint16_t address = (cpu.registers.D + operand) & 0xFFFF;
+    uint8_t lo = cpu.memory->read(address);
+    uint8_t hi = cpu.memory->read((address + 1) & 0xFF);
     uint16_t pointer = (hi << 8) | lo;
     return (cpu.registers.DBR << 16) | (pointer & 0xFFFF);
 }
@@ -69,10 +69,10 @@ inline uint32_t absoluteLong(CPU& cpu, uint16_t index = 0x00)
 inline uint32_t dpIndirectLong(CPU& cpu, uint16_t index = 0x00)
 {
     uint8_t dpOffset = cpu.memory->read(cpu.registers.PC++);
-    uint32_t address = (cpu.registers.D + dpOffset) & 0xFF;
+    uint32_t address = (cpu.registers.D + dpOffset) & 0xFFFF;
     uint8_t lo = cpu.memory->read(address);
-    uint8_t mid = cpu.memory->read(address + 1);
-    uint8_t high = cpu.memory->read(address + 2);
+    uint8_t mid = cpu.memory->read((address + 1) & 0xFFFF);
+    uint8_t high = cpu.memory->read((address + 2) & 0xFFFF);
     uint32_t pointer = (high << 16) | (mid << 8) | lo;
     return pointer + index;
 }

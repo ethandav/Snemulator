@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <vector>
+#include <array>
 #include <memory>
 
 struct MemoryHandler
@@ -15,6 +16,7 @@ struct MemoryMapEntry
 	uint32_t start = 0;
 	uint32_t end = 0;
 	MemoryHandler* handler = nullptr;
+	uint32_t base = 0;
 };
 
 class MemoryMap
@@ -24,7 +26,9 @@ public:
 	uint8_t read(uint32_t address);
 	void write(uint32_t address, uint8_t value);
 private:
-	std::vector<MemoryMapEntry> regions = {};
+	static constexpr size_t BANK_COUNT = 256;
+	std::array<std::vector<MemoryMapEntry>, BANK_COUNT> bankLUT = {};
+	uint8_t lastReadData = 0x00;
 };
 
 class RAM : public MemoryHandler
@@ -65,3 +69,4 @@ public:
 private:
 	void mirrorWRam();
 };
+
