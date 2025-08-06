@@ -182,6 +182,22 @@ namespace OpCode_Tests
 
             EXPECT_EQ(cpu.registers.A, 0x7E);
         }
+        TEST_F(CPUOpcodeTest, LDA_StackRelative_IndirectIndexedY_WrapsCorrectly)
+        {
+            cpu.registers.S = 0x00;
+            memory->wram.write(0x01FF, 0x34);
+            memory->wram.write(0x0100, 0x12);
+            cpu.registers.Y = 0x01;
+            memory->wram.write(0x01235, 0xAB);
+            LoadProgram({
+                0xB3, 0xFF,
+                0x00
+                });
+
+            cpu.run();
+
+            EXPECT_EQ(cpu.registers.A, 0xAB);
+        }
         TEST_F(CPUOpcodeTest, LDA_DirectPage_X_LoadsCorrectValue)
         {
             memory->wram.write(0x0025, 0x42 & 0xFF);
