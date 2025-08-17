@@ -1,5 +1,6 @@
 #include "cpu.h"
 #include "opcodes.h"
+#include "addressing_utils.h"
 #include <iostream>
 
 CPU::CPU()
@@ -71,4 +72,22 @@ void CPU::updateRegisterSizes()
 		registers.X &= 0x00FF;
 		registers.Y &= 0x00FF;
 	}
+}
+
+uint8_t CPU::fetch8()
+{
+	uint8_t v = memory->read(addr::withPBR(registers.PBR, registers.PC));
+	registers.PC = uint16_t(registers.PC + 1);
+	return v;
+}
+uint16_t CPU::fetch16() {
+	uint8_t lo = fetch8();
+	uint8_t hi = fetch8();
+	return uint16_t((hi << 8) | lo);
+}
+uint32_t CPU::fetch24() {
+	uint8_t lo = fetch8();
+	uint8_t mi = fetch8();
+	uint8_t hi = fetch8();
+	return (uint32_t(hi) << 16) | (uint32_t(mi) << 8) | lo;
 }

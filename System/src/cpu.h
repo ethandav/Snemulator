@@ -14,6 +14,7 @@ struct Registers
 	uint16_t	Y	= 0;	
 	uint16_t	S	= 0;	//The stack pointer, points to the next available(unused) location on the stack
 	uint16_t	D	= 0;	//Direct page register, used for direct page addressing modes
+	bool		E	= 0;	// Emulation mode flag
 };
 
 enum PFlags
@@ -37,6 +38,9 @@ public:
 	void setFlag(PFlags flag, bool enabled);
 	bool isAccumulator8Bit();
 	bool isIndex8Bit();
+	uint8_t fetch8();
+	uint16_t fetch16();
+	uint32_t fetch24();
 
 	Registers registers = {};
 	MemoryMap* memory;

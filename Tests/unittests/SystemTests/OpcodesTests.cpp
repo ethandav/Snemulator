@@ -48,6 +48,7 @@ namespace OpCode_Tests
         }
         TEST_F(CPUOpcodeTest, LDA_StackRelative_LoadsCorrectValue)
         {
+            cpu.registers.E = 1;
             cpu.registers.S = 0x10;
             memory->wram.write(0x0115, 0x5A);
             LoadProgram({
@@ -169,6 +170,7 @@ namespace OpCode_Tests
         TEST_F(CPUOpcodeTest, LDA_StackRelative_IndirectIndexedY_LoadsCorrectValue)
         {
             cpu.registers.S = 0x10;
+            cpu.registers.E = 1;
             memory->wram.write(0x0115, 0x30);
             memory->wram.write(0x0116, 0x12);
             cpu.registers.Y = 0x04;
@@ -185,6 +187,7 @@ namespace OpCode_Tests
         TEST_F(CPUOpcodeTest, LDA_StackRelative_IndirectIndexedY_WrapsCorrectly)
         {
             cpu.registers.S = 0x00;
+            cpu.registers.E = 1;
             memory->wram.write(0x01FF, 0x34);
             memory->wram.write(0x0100, 0x12);
             cpu.registers.Y = 0x01;

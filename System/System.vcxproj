@@ -125,6 +125,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\AddressingModes.h" />
+    <ClInclude Include="src\addressing_utils.h" />
     <ClInclude Include="src\cpu.h" />
     <ClInclude Include="src\memory.h" />
     <ClInclude Include="src\opcodes.h" />
